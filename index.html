@@ -36,6 +36,18 @@
         .copy-btn:active {
             transform: scale(0.95);
         }
+        .session-option {
+    transition: all 0.2s ease;
+}
+
+.session-option:hover {
+    background-color: #f5f3ff;
+    border-color: #8b5cf6;
+}
+
+.session-radio {
+    transition: all 0.2s ease;
+}
     </style>
 </head>
 <body class="gradient-bg min-h-screen font-sans">
@@ -124,7 +136,7 @@
                     <p class="text-lg text-gray-600 mb-6">Join our exclusive membership program to get access to premium content, behind-the-scenes footage, exclusive merchandise, and more!</p>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full sm:w-auto">Get Membership Card</button>
-                        <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full sm:w-auto">Meet and Greet Session</button>
+                        <button onclick="showMeetGreetModal()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full sm:w-auto">Meet and Greet Session</button>
                     </div>
                 </div>
                 <div class="md:w-1/2">
@@ -527,6 +539,99 @@
     </div>
 </div>
 
+<!-- Meet & Greet Modal -->
+<div id="meetGreetModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg max-w-md w-full mx-4 max-h-screen overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold text-gray-800">Meet & Greet Request</h3>
+                <button onclick="hideMeetGreetModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <p class="text-gray-600 mb-6">Request a personal session with Simone Suisuna. Please select your preferred option below.</p>
+            
+            <!-- Session Options -->
+            <div class="grid grid-cols-1 gap-4 mb-6">
+                <!-- Facetime Option -->
+                <div class="session-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectSessionOption('facetime')">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-video text-blue-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Facetime Session</h4>
+                            <p class="text-sm text-gray-600">3 minutes video call with Simone</p>
+                            <p class="text-lg font-bold text-purple-600 mt-1">€499.99</p>
+                        </div>
+                        <div class="ml-auto pl-2">
+                            <div class="session-radio w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <div class="w-3 h-3 bg-purple-600 rounded-full hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Physical Meeting Option -->
+                <div class="session-option border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectSessionOption('physical')">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-handshake text-green-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800">One-on-One Physical Meeting</h4>
+                            <p class="text-sm text-gray-600">Private meeting (duration to be discussed with management)</p>
+                            <p class="text-lg font-bold text-purple-600 mt-1">€4,999.99</p>
+                        </div>
+                        <div class="ml-auto pl-2">
+                            <div class="session-radio w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <div class="w-3 h-3 bg-purple-600 rounded-full hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Fields -->
+            <div id="meetGreetForm" class="hidden">
+                <div class="mb-4">
+                    <label for="meetGreetEmail" class="block text-sm font-medium text-gray-700 mb-1">Your Email*</label>
+                    <input type="email" id="meetGreetEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter your email address" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="meetGreetReason" class="block text-sm font-medium text-gray-700 mb-1">Reason for Meeting*</label>
+                    <textarea id="meetGreetReason" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Tell us why you'd like to meet Simone..." required></textarea>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button onclick="hideMeetGreetModal()" class="mr-3 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-300">
+                        Cancel
+                    </button>
+                    <button id="submitMeetGreetRequest" onclick="submitMeetGreetRequest()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded transition duration-300">
+                        Submit Request
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="meetGreetSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg max-w-md w-full mx-4 p-6 text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-check text-green-500 text-2xl"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Request Submitted!</h3>
+        <p class="text-gray-600 mb-6">Thank you for your request. Our team will review it and get back to you shortly.</p>
+        <button onclick="hideMeetGreetSuccessModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded transition duration-300">
+            Close
+        </button>
+    </div>
+</div>
+
 <!-- Add these scripts to your existing ones -->
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8 px-4">
@@ -568,6 +673,144 @@
             </div>
         </div>
     </footer>
+    
+    <script>
+        //meet and greet
+
+        // Meet & Greet variables
+let selectedSessionType = '';
+
+// Show Meet & Greet modal
+function showMeetGreetModal() {
+    document.getElementById('meetGreetModal').classList.remove('hidden');
+    resetMeetGreetForm();
+}
+
+// Hide Meet & Greet modal
+function hideMeetGreetModal() {
+    document.getElementById('meetGreetModal').classList.add('hidden');
+}
+
+// Hide Meet & Greet success modal
+function hideMeetGreetSuccessModal() {
+    document.getElementById('meetGreetSuccessModal').classList.add('hidden');
+    hideMeetGreetModal();
+}
+
+// Select session option
+function selectSessionOption(type) {
+    selectedSessionType = type;
+    
+    // Update UI
+    const options = document.querySelectorAll('.session-option');
+    options.forEach(option => {
+        option.classList.remove('border-purple-600', 'bg-purple-50');
+    });
+    
+    const radios = document.querySelectorAll('.session-radio > div');
+    radios.forEach(radio => {
+        radio.classList.add('hidden');
+    });
+    
+    const selectedOption = event.currentTarget;
+    selectedOption.classList.add('border-purple-600', 'bg-purple-50');
+    selectedOption.querySelector('.session-radio > div').classList.remove('hidden');
+    
+    // Show form
+    document.getElementById('meetGreetForm').classList.remove('hidden');
+    
+    // Scroll to form
+    setTimeout(() => {
+        document.getElementById('meetGreetForm').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+}
+
+// Reset Meet & Greet form
+function resetMeetGreetForm() {
+    selectedSessionType = '';
+    document.getElementById('meetGreetEmail').value = '';
+    document.getElementById('meetGreetReason').value = '';
+    document.getElementById('meetGreetForm').classList.add('hidden');
+    
+    const options = document.querySelectorAll('.session-option');
+    options.forEach(option => {
+        option.classList.remove('border-purple-600', 'bg-purple-50');
+    });
+    
+    const radios = document.querySelectorAll('.session-radio > div');
+    radios.forEach(radio => {
+        radio.classList.add('hidden');
+    });
+}
+
+// Submit Meet & Greet request
+function submitMeetGreetRequest() {
+    const email = document.getElementById('meetGreetEmail').value.trim();
+    const reason = document.getElementById('meetGreetReason').value.trim();
+    
+    // Validate form
+    if (!email || !reason || !selectedSessionType) {
+        alert('Please fill in all required fields and select a session type.');
+        return;
+    }
+    
+    if (!validateEmail(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    
+    // Prepare session details
+    let sessionDetails = {};
+    if (selectedSessionType === 'facetime') {
+        sessionDetails = {
+            type: 'Facetime Session',
+            price: '€499.99',
+            duration: '3 minutes'
+        };
+    } else {
+        sessionDetails = {
+            type: 'One-on-One Physical Meeting',
+            price: '€4,999.99',
+            duration: 'To be discussed with management'
+        };
+    }
+    
+    // Send email using EmailJS
+    const templateParams = {
+        to_email: 'your-management-email@example.com', // Change to your management email
+        fan_email: email,
+        session_type: sessionDetails.type,
+        session_price: sessionDetails.price,
+        session_duration: sessionDetails.duration,
+        reason: reason,
+        request_date: new Date().toLocaleString()
+    };
+    
+    emailjs.send('YOUR_EMAILJS_SERVICE_ID', 'YOUR_MEET_GREET_TEMPLATE_ID', templateParams)
+        .then(() => {
+            // Show success modal
+            document.getElementById('meetGreetSuccessModal').classList.remove('hidden');
+            
+            // Log the request (in a real app, you'd save this to a database)
+            console.log('Meet & Greet request submitted:', {
+                email,
+                sessionType: selectedSessionType,
+                sessionDetails,
+                reason
+            });
+        }, (error) => {
+            console.error('Failed to send email:', error);
+            alert('There was an error submitting your request. Please try again later.');
+        });
+}
+
+// Simple email validation
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+    </script>
 
     <script>
         // Initialize EmailJS (replace with your actual User ID)
