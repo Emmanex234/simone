@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simone Suisuna Official Fan Club</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .membership-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .membership-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .payment-method {
+            transition: all 0.2s ease;
+        }
+        .payment-method:hover {
+            transform: scale(1.05);
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background-color: #4f46e5;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <div class="flex space-x-4 items-center">
+                    <a href="#" class="flex items-center py-4 px-2">
+                        <span class="font-semibold text-gray-500 text-lg">Simone Susinna</span>
+                    </a>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#" class="py-4 px-2 text-purple-600 border-b-4 border-purple-600 font-semibold">Home</a>
+                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Gallery</a>
+                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Events</a>
+                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">About</a>
+                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Contact</a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuButton" class="text-gray-600 focus:outline-none transition-transform duration-200 hover:scale-110">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenu" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-50 hidden transition-opacity duration-300">
+        <div id="mobileMenuPanel" class="bg-white w-4/5 max-w-xs h-full shadow-lg p-6 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <span class="font-semibold text-lg text-gray-700">Menu</span>
+                <button id="closeMobileMenu" class="text-gray-600 focus:outline-none transition-transform duration-200 hover:rotate-90">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <nav class="flex flex-col space-y-4">
+                <a href="#" class="text-purple-600 font-semibold transition-colors duration-200">Home</a>
+                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Gallery</a>
+                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Events</a>
+                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">About</a>
+                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Contact</a>
+            </nav>
+        </div>
+    </div>
+    <script>
+        // Animate mobile menu slide-in/out
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            setTimeout(() => {
+                mobileMenuPanel.classList.remove('-translate-x-full');
+            }, 10);
+        });
+
+        function closeMenuAnimated() {
+            mobileMenuPanel.classList.add('-translate-x-full');
+            setTimeout(() => {
+                mobileMenu.classList.add('hidden');
+            }, 300);
+        }
+
+        closeMobileMenu.addEventListener('click', closeMenuAnimated);
+
+        // Close menu when clicking outside the menu panel
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) {
+                closeMenuAnimated();
+            }
+        });
+    </script>
+
+    <!-- Hero Section -->
+    <section class="py-12 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Welcome to the Official <span class="text-purple-600">Simone Suisuna</span> Fan Club</h1>
+                    <p class="text-lg text-gray-600 mb-6">Join our exclusive membership program to get access to premium content, behind-the-scenes footage, exclusive merchandise, and more!</p>
+                    <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Get Membership</button>
+                    <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Meet and Greet</button>
+                </div>
+                <div class="md:w-1/2">
+                    <!-- Space for model picture -->
+                    <div class="bg-gray-200 rounded-lg overflow-hidden" style="height: 400px;">
+                        <img id="model-image" src="/simone.png" alt="Simone Suisuna" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Membership Section -->
+    <section id="membership" class="py-12 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Choose Your Membership</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Bronze Membership -->
+                <div class="membership-card bg-white rounded-xl overflow-hidden border border-gray-200">
+                    <div class="bg-amber-600 py-4 px-6">
+                        <h3 class="text-xl font-bold text-white text-center">Bronze</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center mb-6">
+                            <span class="text-4xl font-bold text-gray-800">€453.32</span>
+                            <span class="text-gray-600">/year</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Exclusive Bronze Badge</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Monthly Newsletter</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Access to Fan Community</span>
+                            </li>
+                        </ul>
+                        <button onclick="showPaymentOptions('bronze')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Select Plan</button>
+                    </div>
+                </div>
+                
+                <!-- Silver Membership -->
+                <div class="membership-card bg-white rounded-xl overflow-hidden border border-gray-200 transform scale-105">
+                    <div class="bg-gray-400 py-4 px-6">
+                        <h3 class="text-xl font-bold text-white text-center">Silver</h3>
+                        <div class="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded-bl-lg">POPULAR</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center mb-6">
+                            <span class="text-4xl font-bold text-gray-800">€649.99</span>
+                            <span class="text-gray-600">/year</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Exclusive Silver Badge</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Weekly Newsletter</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Behind-the-Scenes Content</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Exclusive Wallpapers</span>
+                            </li>
+                        </ul>
+                        <button onclick="showPaymentOptions('silver')" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Select Plan</button>
+                    </div>
+                </div>
+                
+                <!-- Gold Membership -->
+                <div class="membership-card bg-white rounded-xl overflow-hidden border border-gray-200">
+                    <div class="bg-yellow-500 py-4 px-6">
+                        <h3 class="text-xl font-bold text-white text-center">Gold</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center mb-6">
+                            <span class="text-4xl font-bold text-gray-800">€999.99</span>
+                            <span class="text-gray-600">/year</span>
+                        </div>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Exclusive Gold Badge</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Weekly Newsletter</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Exclusive Videos</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Personalized Shoutout</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span>Discount on Merchandise</span>
+                            </li>
+                        </ul>
+                        <button onclick="showPaymentOptions('gold')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Select Plan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800" id="selectedPlanTitle">Silver Membership</h3>
+                    <button onclick="hidePaymentOptions()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-gray-600 mb-2">Total Amount: <span class="font-bold" id="selectedPlanPrice">$49</span></p>
+                    <p class="text-sm text-gray-500">Please select your preferred payment method below.</p>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div class="space-y-4">
+                    <!-- PayPal -->
+                    <div class="payment-method border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectPaymentMethod('paypal')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fab fa-paypal text-blue-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">PayPal</h4>
+                                <p class="text-sm text-gray-600">Pay with your PayPal account</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Crypto -->
+                    <div class="payment-method border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectPaymentMethod('crypto')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-coins text-purple-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Cryptocurrency</h4>
+                                <p class="text-sm text-gray-600">Pay with Bitcoin, USDT, etc.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gift Card -->
+                    <div class="payment-method border border-gray-200 rounded-lg p-4 cursor-pointer" onclick="selectPaymentMethod('giftcard')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-gift text-green-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Gift Card</h4>
+                                <p class="text-sm text-gray-600">Redeem with a gift card</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Details -->
+                <div id="paymentDetails" class="mt-6 hidden">
+                    <!-- PayPal Details -->
+                    <div id="paypalDetails" class="hidden">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800 mb-2">Pay with PayPal</h4>
+                            <p class="text-sm text-gray-600 mb-4">Send payment to our PayPal account:</p>
+                            
+                            <div class="bg-white p-3 rounded border border-gray-200 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-mono" id="paypalTag">simonesuisuna@example.com</span>
+                                    <button onclick="copyToClipboard('paypalTag')" class="copy-btn bg-blue-500 text-white px-3 py-1 rounded text-sm">
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 mb-4">After sending the payment, please provide your transaction ID below:</p>
+                            
+                            <div class="mb-4">
+                                <label for="paypalTransactionId" class="block text-sm font-medium text-gray-700 mb-1">Transaction ID</label>
+                                <input type="text" id="paypalTransactionId" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="paypalEmail" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                                <input type="email" id="paypalEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="For membership confirmation">
+                            </div>
+                            
+                            <button onclick="submitPaypalPayment()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                Confirm Payment
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Crypto Details -->
+                    <div id="cryptoDetails" class="hidden">
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800 mb-2">Pay with Cryptocurrency</h4>
+                            <p class="text-sm text-gray-600 mb-4">Send payment to our cryptocurrency wallet:</p>
+                            
+                            <div class="space-y-4 mb-4">
+                                <!-- Bitcoin -->
+                                <div class="bg-white p-3 rounded border border-gray-200">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fab fa-bitcoin text-orange-500 mr-2"></i>
+                                        <span class="font-bold">Bitcoin (BTC)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-mono text-sm break-all" id="btcAddress">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</span>
+                                        <button onclick="copyToClipboard('btcAddress')" class="copy-btn bg-purple-500 text-white px-3 py-1 rounded text-sm">
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- USDT -->
+                                <div class="bg-white p-3 rounded border border-gray-200">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fas fa-coins text-green-500 mr-2"></i>
+                                        <span class="font-bold">Tether (USDT)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-mono text-sm break-all" id="usdtAddress">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</span>
+                                        <button onclick="copyToClipboard('usdtAddress')" class="copy-btn bg-purple-500 text-white px-3 py-1 rounded text-sm">
+                                            Copy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-600 mb-4">After sending the payment, please provide your transaction hash below:</p>
+                            
+                            <div class="mb-4">
+                                <label for="cryptoTransactionHash" class="block text-sm font-medium text-gray-700 mb-1">Transaction Hash</label>
+                                <input type="text" id="cryptoTransactionHash" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="cryptoEmail" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                                <input type="email" id="cryptoEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="For membership confirmation">
+                            </div>
+                            
+                            <button onclick="submitCryptoPayment()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                Confirm Payment
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Gift Card Details -->
+                    <div id="giftcardDetails" class="hidden">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-gray-800 mb-2">Redeem Gift Card</h4>
+                            <p class="text-sm text-gray-600 mb-4">Enter your gift card details below:</p>
+                            
+                            <div class="mb-4">
+                                <label for="giftCardCode" class="block text-sm font-medium text-gray-700 mb-1">Gift Card Code</label>
+                                <input type="text" id="giftCardCode" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="giftCardPin" class="block text-sm font-medium text-gray-700 mb-1">PIN (if applicable)</label>
+                                <input type="text" id="giftCardPin" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="giftCardEmail" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                                <input type="email" id="giftCardEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="For membership confirmation">
+                            </div>
+                            
+                            <button onclick="submitGiftCardPayment()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                Redeem Gift Card
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full mx-4 p-6 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check text-green-500 text-2xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful!</h3>
+            <p class="text-gray-600 mb-6">Thank you for your purchase. Your membership details will be sent to your email shortly.</p>
+            <button onclick="hideSuccessModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded transition duration-300">
+                Close
+            </button>
+        </div>
+    </div>
+    <!-- Membership Benefits Section -->
+    <section class="py-12 px-4 bg-gray-50">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Membership Benefits</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Exclusive Content</h3>
+                    <p class="text-gray-600">Get access to exclusive videos, photos, and behind-the-scenes content that you won't find anywhere else.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Community Access</h3>
+                    <p class="text-gray-600">Join our vibrant community of fans and connect with others who share your passion for Simone Suisuna.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Merchandise Discounts</h3>
+                    <p class="text-gray-600">Enjoy exclusive discounts on official merchandise, including clothing, posters, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Section -->
+    <section class="py-12 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Contact Us</h2>
+            <form id="contactForm" class="max-w-md mx-auto space-y-6">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input type="text" id="name" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                </div>
+                <div>
+                    <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                    <textarea id="message" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md" required></textarea>
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Send Message</button>
+            </form>
+        </div>
+    </section>
+    <!-- Success Message -->
+    <div id="successMessage" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg max-w-md w-full mx-4 p-6 text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Message Sent!</h3>
+            <p class="text-gray-600 mb-6">Thank you for contacting us. We will get back to you shortly.</p>
+            <button onclick="document.getElementById('successMessage').classList.add('hidden')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded transition duration-300">
+                Close
+            </button>
+        </div>
+    </div>
+    <!-- Live Chat Button -->
+<div id="chatButton" class="fixed bottom-6 right-6 bg-purple-600 text-white w-14 h-14 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-purple-700 transition duration-300 z-40">
+    <i class="fas fa-comment-dots text-2xl"></i>
+    <span id="unreadCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+</div>
+
+<!-- Live Chat Container -->
+<div id="chatContainer" class="fixed bottom-24 right-6 w-80 bg-white rounded-lg shadow-xl flex flex-col hidden z-50 border border-gray-200">
+    <!-- Chat Header -->
+    <div class="bg-purple-600 text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
+        <div class="font-bold">Fan Support</div>
+        <div class="flex space-x-2">
+            <button id="minimizeChat" class="text-white hover:text-gray-200">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button id="closeChat" class="text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Chat Messages -->
+    <div id="chatMessages" class="flex-1 p-4 overflow-y-auto max-h-80 bg-gray-50">
+        <div class="text-center text-gray-500 text-sm py-4">
+            Welcome to Simone Suisuna fan support! How can we help you?
+        </div>
+    </div>
+    
+    <!-- Chat Input -->
+    <div class="p-3 border-t border-gray-200 bg-white">
+        <div class="flex">
+            <input id="chatInput" type="text" placeholder="Type your message..." class="flex-1 border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
+            <button id="sendMessage" class="bg-purple-600 text-white px-4 rounded-r-lg hover:bg-purple-700 transition duration-300">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="text-xs text-gray-500 mt-1">
+            Typically replies in a few minutes
+        </div>
+    </div>
+</div>
+
+<!-- Add these scripts to your existing ones -->
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Simone Suisuna</h3>
+                    <p class="text-gray-400">The official fan club website for Simone Suisuna. Join our community and get exclusive content.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Gallery</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Events</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-twitter text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-facebook text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-300">
+                            <i class="fab fa-youtube text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 Simone Suisuna Fan Club. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize EmailJS (replace with your actual User ID)
+        emailjs.init("YOUR_EMAILJS_USER_ID");
+        
+        // Current selected plan and payment method
+        let currentPlan = '';
+        let currentPaymentMethod = '';
+        
+        // Scroll to membership section
+        function scrollToMembership() {
+            document.getElementById('membership').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Show payment options modal
+        function showPaymentOptions(plan) {
+            currentPlan = plan;
+            
+            // Set the title and price based on the selected plan
+            const modal = document.getElementById('paymentModal');
+            const title = document.getElementById('selectedPlanTitle');
+            const price = document.getElementById('selectedPlanPrice');
+            
+            if (plan === 'bronze') {
+                title.textContent = 'Bronze Membership';
+                price.textContent = '$19';
+            } else if (plan === 'silver') {
+                title.textContent = 'Silver Membership';
+                price.textContent = '$49';
+            } else if (plan === 'gold') {
+                title.textContent = 'Gold Membership';
+                price.textContent = '$99';
+            }
+            
+            // Reset payment details
+            document.getElementById('paymentDetails').classList.add('hidden');
+            document.getElementById('paypalDetails').classList.add('hidden');
+            document.getElementById('cryptoDetails').classList.add('hidden');
+            document.getElementById('giftcardDetails').classList.add('hidden');
+            
+            // Show modal
+            modal.classList.remove('hidden');
+        }
+        
+        // Hide payment options modal
+        function hidePaymentOptions() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+        
+        // Select payment method
+        function selectPaymentMethod(method) {
+            currentPaymentMethod = method;
+            
+            // Show payment details
+            const paymentDetails = document.getElementById('paymentDetails');
+            paymentDetails.classList.remove('hidden');
+            
+            // Hide all method details
+            document.getElementById('paypalDetails').classList.add('hidden');
+            document.getElementById('cryptoDetails').classList.add('hidden');
+            document.getElementById('giftcardDetails').classList.add('hidden');
+            
+            // Show selected method details
+            document.getElementById(method + 'Details').classList.remove('hidden');
+        }
+        
+        // Copy text to clipboard
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Change button text temporarily
+                const buttons = document.querySelectorAll('.copy-btn');
+                buttons.forEach(btn => {
+                    if (btn.textContent.trim() === 'Copy') {
+                        const originalText = btn.textContent;
+                        btn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            btn.textContent = originalText;
+                        }, 2000);
+                    }
+                });
+            });
+        }
+        
+        // Submit PayPal payment
+        function submitPaypalPayment() {
+            const transactionId = document.getElementById('paypalTransactionId').value;
+            const email = document.getElementById('paypalEmail').value;
+            
+            if (!transactionId || !email) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Here you would typically send this data to your backend
+            console.log('PayPal payment submitted:', {
+                plan: currentPlan,
+                transactionId,
+                email
+            });
+            
+            // Show success modal
+            hidePaymentOptions();
+            document.getElementById('successModal').classList.remove('hidden');
+            
+            // Send confirmation email (using EmailJS)
+            sendConfirmationEmail(email, currentPlan, 'PayPal', transactionId);
+        }
+        
+        // Submit Crypto payment
+        function submitCryptoPayment() {
+            const transactionHash = document.getElementById('cryptoTransactionHash').value;
+            const email = document.getElementById('cryptoEmail').value;
+            
+            if (!transactionHash || !email) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Here you would typically send this data to your backend
+            console.log('Crypto payment submitted:', {
+                plan: currentPlan,
+                transactionHash,
+                email
+            });
+            
+            // Show success modal
+            hidePaymentOptions();
+            document.getElementById('successModal').classList.remove('hidden');
+            
+            // Send confirmation email (using EmailJS)
+            sendConfirmationEmail(email, currentPlan, 'Cryptocurrency', transactionHash);
+        }
+        
+        // Submit Gift Card payment
+        function submitGiftCardPayment() {
+            const code = document.getElementById('giftCardCode').value;
+            const pin = document.getElementById('giftCardPin').value;
+            const email = document.getElementById('giftCardEmail').value;
+            
+            if (!code || !email) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Here you would typically send this data to your backend
+            console.log('Gift card submitted:', {
+                plan: currentPlan,
+                code,
+                pin,
+                email
+            });
+            
+            // Show success modal
+            hidePaymentOptions();
+            document.getElementById('successModal').classList.remove('hidden');
+            
+            // Send confirmation email (using EmailJS)
+            sendConfirmationEmail(email, currentPlan, 'Gift Card', code);
+        }
+        
+        // Hide success modal
+        function hideSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+        
+        // Send confirmation email using EmailJS
+        function sendConfirmationEmail(email, plan, method, transactionId) {
+            const templateParams = {
+                to_email: email,
+                plan: plan,
+                payment_method: method,
+                transaction_id: transactionId
+            };
+            
+            emailjs.send('YOUR_EMAILJS_SERVICE_ID', 'YOUR_EMAILJS_TEMPLATE_ID', templateParams)
+                .then(() => {
+                    console.log('Email sent successfully');
+                }, (error) => {
+                    console.error('Failed to send email:', error);
+                });
+        }
+        
+        // Load model image (you can replace this with your actual image)
+        window.onload = function() {
+            // Replace with your actual image path
+            // document.getElementById('model-image').src = 'path-to-your-image.jpg';
+        };
+
+
+        // Firebase configuration (replace with your actual config)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Chat variables
+let chatOpen = false;
+let chatMinimized = false;
+let unreadMessages = 0;
+let userId = generateUserId();
+let supportOnline = false;
+
+// Generate a simple user ID for anonymous chat
+function generateUserId() {
+    return 'user-' + Math.random().toString(36).substr(2, 9);
+}
+
+// DOM elements
+const chatButton = document.getElementById('chatButton');
+const chatContainer = document.getElementById('chatContainer');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendMessage = document.getElementById('sendMessage');
+const closeChat = document.getElementById('closeChat');
+const minimizeChat = document.getElementById('minimizeChat');
+const unreadCount = document.getElementById('unreadCount');
+
+// Check if support is online (you can modify this based on your actual support hours)
+function checkSupportOnline() {
+    const now = new Date();
+    const hours = now.getHours();
+    // Example: support is online between 9AM and 5PM
+    supportOnline = hours >= 9 && hours < 17;
+    return supportOnline;
+}
+
+// Format chat message time
+function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Add a message to the chat UI
+function addMessageToUI(text, sender, timestamp) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `mb-3 flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+    
+    const messageBubble = document.createElement('div');
+    messageBubble.className = `max-w-xs px-4 py-2 rounded-lg ${sender === 'user' ? 'bg-purple-600 text-white rounded-br-none' : 'bg-gray-200 text-gray-800 rounded-bl-none'}`;
+    
+    const messageText = document.createElement('div');
+    messageText.textContent = text;
+    
+    const messageTime = document.createElement('div');
+    messageTime.className = 'text-xs mt-1 opacity-70 text-right';
+    messageTime.textContent = formatTime(new Date(timestamp));
+    
+    messageBubble.appendChild(messageText);
+    messageBubble.appendChild(messageTime);
+    messageDiv.appendChild(messageBubble);
+    chatMessages.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Send a message
+function sendMessageHandler() {
+    const message = chatInput.value.trim();
+    if (message === '') return;
+    
+    const timestamp = Date.now();
+    addMessageToUI(message, 'user', timestamp);
+    
+    // Save message to Firebase
+    database.ref('chat/' + userId).push({
+        text: message,
+        sender: 'user',
+        timestamp: timestamp
+    });
+    
+    chatInput.value = '';
+    
+    // If support is offline, show automated response after a delay
+    if (!checkSupportOnline()) {
+        setTimeout(() => {
+            const responseTimestamp = Date.now();
+            addMessageToUI("Thanks for your message! Our support team is currently offline. We'll get back to you as soon as possible.", 'support', responseTimestamp);
+            
+            database.ref('chat/' + userId).push({
+                text: "Thanks for your message! Our support team is currently offline. We'll get back to you as soon as possible.",
+                sender: 'support',
+                timestamp: responseTimestamp
+            });
+        }, 2000);
+    }
+}
+
+// Toggle chat visibility
+function toggleChat() {
+    if (chatMinimized) {
+        chatContainer.classList.remove('hidden');
+        chatMinimized = false;
+        return;
+    }
+    
+    chatOpen = !chatOpen;
+    if (chatOpen) {
+        chatContainer.classList.remove('hidden');
+        unreadMessages = 0;
+        unreadCount.classList.add('hidden');
+    } else {
+        chatContainer.classList.add('hidden');
+    }
+}
+
+// Minimize chat
+function minimizeChatHandler() {
+    chatContainer.classList.add('hidden');
+    chatMinimized = true;
+}
+
+// Load chat history
+function loadChatHistory() {
+    database.ref('chat/' + userId).on('value', (snapshot) => {
+        chatMessages.innerHTML = '';
+        
+        if (!snapshot.exists()) {
+            chatMessages.innerHTML = `
+                <div class="text-center text-gray-500 text-sm py-4">
+                    Welcome to Simone Suisuna fan support! How can we help you?
+                </div>
+            `;
+            return;
+        }
+        
+        const messages = [];
+        snapshot.forEach((childSnapshot) => {
+            messages.push(childSnapshot.val());
+        });
+        
+        // Sort messages by timestamp
+        messages.sort((a, b) => a.timestamp - b.timestamp);
+        
+        // Display messages
+        messages.forEach((message) => {
+            addMessageToUI(message.text, message.sender, message.timestamp);
+        });
+    });
+}
+
+// Event listeners
+chatButton.addEventListener('click', toggleChat);
+sendMessage.addEventListener('click', sendMessageHandler);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessageHandler();
+});
+closeChat.addEventListener('click', () => {
+    chatOpen = false;
+    chatContainer.classList.add('hidden');
+});
+minimizeChat.addEventListener('click', minimizeChatHandler);
+
+// Check if support is online when page loads
+checkSupportOnline();
+
+// Load chat history
+loadChatHistory();
+
+// Listen for new messages (for unread count)
+database.ref('chat/' + userId).on('child_added', (snapshot) => {
+    const message = snapshot.val();
+    
+    if (message.sender === 'support' && !chatOpen) {
+        unreadMessages++;
+        unreadCount.textContent = unreadMessages;
+        unreadCount.classList.remove('hidden');
+    }
+});
+    </script>
+</body>
+</html>
