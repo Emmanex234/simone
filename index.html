@@ -63,9 +63,8 @@
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-1">
                     <a href="#" class="py-4 px-2 text-purple-600 border-b-4 border-purple-600 font-semibold">Home</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Gallery</a>
                     <a href="#membership" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Membership Benefits</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">About</a>
+                    <a href="#about" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">About</a>
                     <a href="#contact" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Contact</a>
                 </div>
                 <!-- Mobile Menu Button -->
@@ -87,11 +86,10 @@
                 </button>
             </div>
             <nav class="flex flex-col space-y-4">
-                <a href="#" class="text-purple-600 font-semibold transition-colors duration-200">Home</a>
-                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Gallery</a>
-                <a href="#membership" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Membership Benefits</a>
-                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">About</a>
-                <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Contact</a>
+                <a href="#" onclick="location.reload();" class="text-purple-600 font-semibold transition-colors duration-200 mobile-menu-link">Home</a>
+                <a href="#membership" class="text-gray-700 hover:text-purple-600 transition-colors duration-200 mobile-menu-link">Membership Benefits</a>
+                <a href="#about" class="text-gray-700 hover:text-purple-600 transition-colors duration-200 mobile-menu-link">About</a>
+                <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors duration-200 mobile-menu-link">Contact</a>
             </nav>
         </div>
     </div>
@@ -123,6 +121,11 @@
             if (e.target === mobileMenu) {
                 closeMenuAnimated();
             }
+        });
+
+        // Close menu when clicking any menu link
+        document.querySelectorAll('.mobile-menu-link').forEach(link => {
+            link.addEventListener('click', closeMenuAnimated);
         });
     </script>
 
@@ -466,6 +469,176 @@
             </div>
         </div>
     </section>
+
+    <!-- About Section -->
+<section id="about" class="py-16 px-4 bg-white">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">About Simone Susinna</h2>
+        
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+            <!-- Profile Image -->
+            <div class="lg:w-1/3">
+                <div class="bg-gray-200 rounded-xl overflow-hidden shadow-lg">
+                    <img id="about-image" src="/about.png" alt="Simone Susinna" class="w-full h-auto object-cover">
+                </div>
+            </div>
+            
+            <!-- Biography -->
+            <div class="lg:w-2/3">
+                <div class="prose max-w-none">
+                    <p class="text-lg text-gray-700 mb-6">
+                        Simone Susinna is an Italian actor and model, born on November 14, 1993, in Catania, Italy. 
+                        He has made a significant impact in both the fashion and entertainment industries, transitioning 
+                        seamlessly from modeling to acting with notable success.
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <!-- Early Career -->
+                        <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-purple-600">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Early Career</h3>
+                            <p class="text-gray-700">
+                                Susinna began his modeling career at the age of 18 after being scouted by Dolce and Gabbana. 
+                                He quickly rose through the ranks, walking for prestigious brands like Emporio Armani and 
+                                establishing himself as a sought-after model in the fashion industry.
+                            </p>
+                        </div>
+                        
+                        <!-- Acting Breakthrough -->
+                        <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-purple-600">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Acting Breakthrough</h3>
+                            <p class="text-gray-700">
+                                Simone transitioned to acting with his breakout role in the Netflix movie 
+                                <span class="font-semibold">"365 Days: This Day"</span> (2022), where he played 
+                                Marcello "Nacho" Matos. His performance garnered international attention and 
+                                led to roles in the sequel <span class="font-semibold">"The Next 365 Days"</span> 
+                                and the film <span class="font-semibold">"Heaven in Hell"</span>.
+                            </p>
+                        </div>
+                        
+                        <!-- Career Highlights -->
+                        <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-purple-600">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">Career Highlights</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                                <li>Featured in major fashion campaigns for Dolce & Gabbana and Emporio Armani</li>
+                                <li>Breakout acting role in Netflix's "365 Days: This Day" (2022)</li>
+                                <li>Reprised his role in the sequel "The Next 365 Days"</li>
+                                <li>Starred in the film "Heaven in Hell"</li>
+                                <li>Participated in the Italian reality show "L'Isola dei Famosi"</li>
+                                <li>Represented by multiple modeling agencies internationally</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Fun Facts -->
+                    <div class="mt-8 bg-purple-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold text-purple-800 mb-3">Did You Know?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-birthday-cake text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Birthday</h4>
+                                    <p class="text-gray-700">November 14, 1993</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-map-marker-alt text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Hometown</h4>
+                                    <p class="text-gray-700">Catania, Italy</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-ruler-vertical text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Height</h4>
+                                    <p class="text-gray-700">1.85 m (6'1")</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="bg-purple-100 p-2 rounded-full mr-3">
+                                    <i class="fas fa-language text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">Languages</h4>
+                                    <p class="text-gray-700">Italian, English</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Career Timeline -->
+        <div class="mt-16">
+            <h3 class="text-2xl font-bold text-center text-gray-800 mb-8">Career Timeline</h3>
+            <div class="relative">
+                <!-- Timeline line -->
+                <div class="hidden md:block absolute left-1/2 h-full w-1 bg-purple-200 transform -translate-x-1/2"></div>
+                
+                <!-- Timeline items -->
+                <div class="space-y-8 md:space-y-0">
+                    <!-- 2011 - Modeling Start -->
+                    <div class="relative md:flex justify-between items-center">
+                        <div class="md:w-5/12 md:pr-8 mb-4 md:mb-0 text-right">
+                            <h4 class="text-xl font-bold text-purple-600">2011</h4>
+                            <p class="text-gray-700">Discovered by Dolce & Gabbana at age 18</p>
+                        </div>
+                        <div class="hidden md:flex justify-center md:w-2/12">
+                            <div class="w-6 h-6 bg-purple-600 rounded-full border-4 border-white shadow"></div>
+                        </div>
+                        <div class="md:w-5/12 md:pl-8">
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                <h4 class="font-bold text-gray-800">Modeling Career Begins</h4>
+                                <p class="text-gray-700">Started working with top Italian fashion houses, quickly becoming a sought-after model.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2022 - 365 Days -->
+                    <div class="relative md:flex justify-between items-center">
+                        <div class="md:w-5/12 md:pr-8 mb-4 md:mb-0 text-right order-last">
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                <h4 class="font-bold text-gray-800">Breakthrough Role</h4>
+                                <p class="text-gray-700">Played Marcello "Nacho" Matos in the Netflix film, gaining international recognition.</p>
+                            </div>
+                        </div>
+                        <div class="hidden md:flex justify-center md:w-2/12">
+                            <div class="w-6 h-6 bg-purple-600 rounded-full border-4 border-white shadow"></div>
+                        </div>
+                        <div class="md:w-5/12 md:pl-8">
+                            <h4 class="text-xl font-bold text-purple-600">2022</h4>
+                            <p class="text-gray-700">Starred in "365 Days: This Day"</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 2023 - Continued Success -->
+                    <div class="relative md:flex justify-between items-center">
+                        <div class="md:w-5/12 md:pr-8 mb-4 md:mb-0 text-right">
+                            <h4 class="text-xl font-bold text-purple-600">2023</h4>
+                            <p class="text-gray-700">Appeared in sequel and new projects</p>
+                        </div>
+                        <div class="hidden md:flex justify-center md:w-2/12">
+                            <div class="w-6 h-6 bg-purple-600 rounded-full border-4 border-white shadow"></div>
+                        </div>
+                        <div class="md:w-5/12 md:pl-8">
+                            <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                                <h4 class="font-bold text-gray-800">Expanding His Career</h4>
+                                <p class="text-gray-700">Reprised his role in "The Next 365 Days" and starred in "Heaven in Hell" while continuing modeling work.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
     <!-- Contact Section -->
     <section class="py-12 px-4 bg-white" id="contact">
         <div class="max-w-6xl mx-auto">
@@ -550,7 +723,7 @@
                 </button>
             </div>
             
-            <p class="text-gray-600 mb-6">Request a personal session with Simone Suisuna. Please select your preferred option below.</p>
+            <p class="text-gray-600 mb-6">Request a personal session with Simone Susinna. Please select your preferred option below.</p>
             
             <!-- Session Options -->
             <div class="grid grid-cols-1 gap-4 mb-6">
@@ -809,6 +982,12 @@ function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
 }
+
+// Load about section image
+window.addEventListener('load', function() {
+    // Replace with your actual image path
+    // document.getElementById('about-image').src = 'path-to-simone-about-image.jpg';
+});
 
     </script>
 
