@@ -52,9 +52,9 @@
                 <div class="hidden md:flex items-center space-x-1">
                     <a href="#" class="py-4 px-2 text-purple-600 border-b-4 border-purple-600 font-semibold">Home</a>
                     <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Gallery</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Events</a>
+                    <a href="#membership" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Membership Benefits</a>
                     <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">About</a>
-                    <a href="#" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Contact</a>
+                    <a href="#contact" class="py-4 px-2 text-gray-500 font-semibold hover:text-purple-600 transition duration-300">Contact</a>
                 </div>
                 <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
@@ -77,9 +77,9 @@
             <nav class="flex flex-col space-y-4">
                 <a href="#" class="text-purple-600 font-semibold transition-colors duration-200">Home</a>
                 <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Gallery</a>
-                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Events</a>
+                <a href="#membership" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Membership Benefits</a>
                 <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">About</a>
-                <a href="#" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Contact</a>
+                <a href="#contact" class="text-gray-700 hover:text-purple-600 transition-colors duration-200">Contact</a>
             </nav>
         </div>
     </div>
@@ -114,15 +114,18 @@
         });
     </script>
 
+
     <!-- Hero Section -->
-    <section class="py-12 px-4">
+    <section class="py-12 px-4 " style="margin-top:8%;">
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
                     <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Welcome to the Official <span class="text-purple-600">Simone Suisuna</span> Fan Club</h1>
                     <p class="text-lg text-gray-600 mb-6">Join our exclusive membership program to get access to premium content, behind-the-scenes footage, exclusive merchandise, and more!</p>
-                    <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Get Membership</button>
-                    <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">Meet and Greet</button>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full sm:w-auto">Get Membership Card</button>
+                        <button onclick="scrollToMembership()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full sm:w-auto">Meet and Greet Session</button>
+                    </div>
                 </div>
                 <div class="md:w-1/2">
                     <!-- Space for model picture -->
@@ -252,7 +255,7 @@
                 </div>
                 
                 <div class="mb-6">
-                    <p class="text-gray-600 mb-2">Total Amount: <span class="font-bold" id="selectedPlanPrice">$49</span></p>
+                    <p class="text-gray-600 mb-2">Total Amount: <span class="font-bold" id="selectedPlanPrice">€649.99</span></p>
                     <p class="text-sm text-gray-500">Please select your preferred payment method below.</p>
                 </div>
                 
@@ -432,7 +435,7 @@
         </div>
     </div>
     <!-- Membership Benefits Section -->
-    <section class="py-12 px-4 bg-gray-50">
+    <section class="py-12 px-4 bg-gray-50" id="membership">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Membership Benefits</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -452,7 +455,7 @@
         </div>
     </section>
     <!-- Contact Section -->
-    <section class="py-12 px-4 bg-white">
+    <section class="py-12 px-4 bg-white" id="contact">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Contact Us</h2>
             <form id="contactForm" class="max-w-md mx-auto space-y-6">
@@ -590,13 +593,13 @@
             
             if (plan === 'bronze') {
                 title.textContent = 'Bronze Membership';
-                price.textContent = '$19';
+                price.textContent = '€453.32';
             } else if (plan === 'silver') {
                 title.textContent = 'Silver Membership';
-                price.textContent = '$49';
+                price.textContent = '€649.99';
             } else if (plan === 'gold') {
                 title.textContent = 'Gold Membership';
-                price.textContent = '$99';
+                price.textContent = '€999.99';
             }
             
             // Reset payment details
