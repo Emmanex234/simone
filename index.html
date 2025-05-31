@@ -1001,50 +1001,119 @@ window.addEventListener('load', function() {
 // Configuration
 const API_CONFIG = {
   LOCAL: 'http://localhost:3001',
-  PRODUCTION: 'https://simone-susinna.vercel.app/',
+  PRODUCTION: 'https://simone-susinna.vercel.app', // ❌ REMOVED trailing slash
   ENDPOINTS: {
     MEMBERSHIP: '/api/membership',
     HEALTH: '/api/health'
   }
 };
 
-// Detect environment and set API base URL
+// Enhanced environment detection
 function getApiBaseUrl() {
+  // Check if running locally
   const isLocal = window.location.hostname === 'localhost' || 
-                 window.location.hostname === '127.0.0.1';
-  return isLocal ? API_CONFIG.LOCAL : API_CONFIG.PRODUCTION;
+                 window.location.hostname === '127.0.0.1' ||
+                 window.location.hostname === '0.0.0.0';
+  
+  // For development, you might also want to check for custom domains
+  const isDevelopment = window.location.hostname.includes('localhost') ||
+                       window.location.port === '3000' ||
+                       window.location.port === '5173' || // Vite
+                       window.location.port === '8080';   // Other dev servers
+  
+  console.log('🔍 Environment Detection:', {
+    hostname: window.location.hostname,
+    port: window.location.port,
+    isLocal,
+    isDevelopment
+  });
+
+  return (isLocal || isDevelopment) ? API_CONFIG.LOCAL : API_CONFIG.PRODUCTION;
 }
 
 const API_BASE_URL = getApiBaseUrl();
 console.log('🌐 API Base URL:', API_BASE_URL);
 
-// Enhanced fetch wrapper with error handling
+// Enhanced fetch wrapper with better error handling
 async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  console.log('📡 API Request:', url, options);
+  console.log('📡 API Request:', { url, method: options.method || 'GET', options });
 
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
         'Accept': 'application/json',
+        'Content-Type': options.body instanceof FormData ? undefined : 'application/json',
         ...(options.headers || {})
       }
     });
 
-    console.log('📥 API Response:', response);
+    console.log('📥 API Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      url: response.url
+    });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    // Handle different response types
+    let responseData;
+    const contentType = response.headers.get('content-type');
+    
+    if (contentType && contentType.includes('application/json')) {
+      responseData = await response.json();
+    } else {
+      responseData = await response.text();
     }
 
-    return await response.json();
+    if (!response.ok) {
+      // Create detailed error information
+      const errorInfo = {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        message: typeof responseData === 'object' ? responseData.message : responseData
+      };
+      
+      console.error('❌ API Error Response:', errorInfo);
+      throw new Error(errorInfo.message || `HTTP error! status: ${response.status}`);
+    }
+
+    console.log('✅ API Success:', responseData);
+    return responseData;
+
   } catch (error) {
-    console.error('❌ API Error:', error);
-    throw error;
+    console.error('❌ API Error:', {
+      message: error.message,
+      url,
+      error
+    });
+    
+    // Re-throw with more context
+    throw new Error(`API request failed: ${error.message}`);
   }
 }
+
+// Helper function to test API connectivity
+async function testApiConnection() {
+  try {
+    console.log('🧪 Testing API connection...');
+    const response = await apiFetch(API_CONFIG.ENDPOINTS.HEALTH);
+    console.log('✅ API connection successful:', response);
+    return true;
+  } catch (error) {
+    console.error('❌ API connection failed:', error);
+    return false;
+  }
+}
+
+// Test connection on page load (optional)
+document.addEventListener('DOMContentLoaded', () => {
+  testApiConnection();
+});
+
+// Export for use in other files (if using modules)
+// export { apiFetch, API_CONFIG, testApiConnection };
 
 // Test server connection
 async function testServerConnection() {
