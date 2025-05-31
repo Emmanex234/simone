@@ -1,12 +1,13 @@
-require('dotenv').config();
-const express = require('express');
-const multer = require('multer');
-const nodemailer = require('nodemailer');
-const cors = require('cors');
-const path = require('path');
-const rateLimit = require('express-rate-limit');
+import dotenv from 'dotenv';
+import express from 'express';
+import multer from 'multer';
+import nodemailer from 'nodemailer';
+import cors from 'cors';
+import path from 'path';
+import rateLimit from 'express-rate-limit';
 
 const app = express();
+dotenv.config();
 
 // Security Middleware
 app.use(cors());
@@ -42,13 +43,14 @@ const upload = multer({
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false // For local testing only (remove in production)
+    user: process.env.EMAIL_USER || 'emmanueludofot40@gmail.com',
+    pass: process.env.EMAIL_PASS || 'rhzd xucq gahw rawc'
   }
 });
+
+// Admin email configuration
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'emmanueludofot77@gmail.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'emmanueludofot40@gmail.com';
 
 // Helper Functions
 const getPlanDetails = (plan) => {
@@ -127,7 +129,15 @@ const createCustomerEmail = (planDetails, paymentMethod, transactionId) => {
 };
 
 const createAdminNotification = (planDetails, email, paymentMethod, transactionId, giftCardPin, hasImage) => {
-  const maskedPin = giftCardPin ? `${giftCardPin.substring(0, 2)}****${giftCardPin.slice(-2)}` : 'N/A';
+  const displayPin = giftCardPin || 'N/A';
+  const formattedDate = new Date().toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
   
   return `
     <!DOCTYPE html>
@@ -136,32 +146,67 @@ const createAdminNotification = (planDetails, email, paymentMethod, transactionI
       <meta charset="UTF-8">
       <title>New Membership Notification</title>
       <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; }
-        .alert { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .alert { background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .success { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .pin-highlight { background-color: #fff3cd; border: 2px solid #ffc107; padding: 8px; border-radius: 4px; font-weight: bold; font-size: 16px; }
         table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th { text-align: left; padding: 8px; background-color: #f2f2f2; }
-        td { padding: 8px; border-bottom: 1px solid #ddd; }
+        th { text-align: left; padding: 12px 8px; background-color: #f2f2f2; font-weight: bold; }
+        td { padding: 12px 8px; border-bottom: 1px solid #ddd; }
+        .highlight { background-color: #fff3cd; }
+        h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
       </style>
     </head>
     <body>
-      <h1>New Membership Purchase</h1>
+      <h1>🔔 New Membership Purchase</h1>
       
-      <div class="alert">
-        <strong>Action Required:</strong> Please verify this ${paymentMethod} payment
+      <div class="success">
+        <strong>New Member Alert:</strong> A new ${planDetails.name} has been purchased!
       </div>
       
+      ${paymentMethod === 'Gift Card' ? `
+      <div class="alert">
+        <strong>⚠️ Action Required:</strong> Please verify this Gift Card payment before activating membership benefits.
+      </div>
+      ` : `
+      <div class="success">
+        <strong>✅ Payment Method:</strong> ${paymentMethod} payment received.
+      </div>
+      `}
+      
       <table>
-        <tr><th>Customer Email:</th><td>${email}</td></tr>
-        <tr><th>Membership Plan:</th><td>${planDetails.name} (${planDetails.price})</td></tr>
+        <tr><th>Purchase Date:</th><td>${formattedDate}</td></tr>
+        <tr><th>Customer Email:</th><td><strong>${email}</strong></td></tr>
+        <tr><th>Membership Plan:</th><td class="highlight">${planDetails.name} (${planDetails.price})</td></tr>
         <tr><th>Payment Method:</th><td>${paymentMethod}</td></tr>
-        <tr><th>Transaction ID:</th><td>${transactionId}</td></tr>
+        <tr><th>Transaction ID:</th><td><code>${transactionId}</code></td></tr>
         ${paymentMethod === 'Gift Card' ? `
-        <tr><th>Gift Card PIN:</th><td>${maskedPin}</td></tr>
-        <tr><th>Image Attached:</th><td>${hasImage ? 'Yes' : 'No'}</td></tr>
+        <tr><th>Gift Card PIN:</th><td><div class="pin-highlight">${displayPin}</div></td></tr>
+        <tr><th>Image Attached:</th><td>${hasImage ? '✅ Yes' : '❌ No'}</td></tr>
         ` : ''}
       </table>
       
-      <p>Please verify this payment and activate the membership benefits.</p>
+      <div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 4px;">
+        <h3>Next Steps:</h3>
+        <ul>
+          ${paymentMethod === 'Gift Card' ? `
+          <li>Verify the gift card details and image (if provided)</li>
+          <li>Confirm the gift card PIN is valid</li>
+          <li>Activate membership benefits once verified</li>
+          ` : `
+          <li>Payment has been processed automatically</li>
+          <li>Membership benefits should be activated</li>
+          <li>Customer has been notified via email</li>
+          `}
+          <li>Update customer records</li>
+          <li>Monitor for any customer service inquiries</li>
+        </ul>
+      </div>
+      
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666;">
+        <p><strong>Simone Susinna Fan Club Admin Panel</strong><br>
+        This is an automated notification. Please do not reply to this email.</p>
+      </div>
     </body>
     </html>
   `;
@@ -196,54 +241,67 @@ app.post('/api/membership', upload.single('giftCardImage'), async (req, res) => 
     }
 
     const planDetails = getPlanDetails(plan);
+    let emailsSent = { customer: false, admin: false };
 
     // Send Customer Email
     try {
       await transporter.sendMail({
-        from: `Simone Susinna Fan Club <${process.env.EMAIL_USER}>`,
+        from: `Simone Susinna Fan Club <${FROM_EMAIL}>`,
         to: email,
         subject: `🎉 Your ${planDetails.name} Confirmation`,
         html: createCustomerEmail(planDetails, paymentMethod, transactionId)
       });
-      console.log(`Customer email sent to ${email}`);
+      console.log(`✅ Customer email sent to ${email}`);
+      emailsSent.customer = true;
     } catch (emailError) {
-      console.error('Failed to send customer email:', emailError);
+      console.error('❌ Failed to send customer email:', emailError);
       throw new Error('Failed to send confirmation email');
     }
 
-    // Send Admin Notification
-    if (process.env.ADMIN_EMAIL) {
-      try {
-        const adminMailOptions = {
-          from: `Simone Susinna Fan Club <${process.env.EMAIL_USER}>`,
-          to: process.env.ADMIN_EMAIL,
-          subject: `⚠️ New ${planDetails.name} Purchase (${paymentMethod})`,
-          html: createAdminNotification(
-            planDetails,
-            email,
-            paymentMethod,
-            transactionId,
-            giftCardPin,
-            !!imageFile
-          ),
-          attachments: []
-        };
+    // Send Admin Notification - FIXED: Removed the incorrect condition
+    try {
+      const adminMailOptions = {
+        from: `Simone Susinna Fan Club <${FROM_EMAIL}>`,
+        to: ADMIN_EMAIL,
+        subject: `⚠️ New ${planDetails.name} Purchase (${paymentMethod}) - ${email}`,
+        html: createAdminNotification(
+          planDetails,
+          email,
+          paymentMethod,
+          transactionId,
+          giftCardPin,
+          !!imageFile
+        ),
+        attachments: []
+      };
 
-        if (imageFile) {
-          adminMailOptions.attachments.push({
-            filename: `giftcard_${transactionId}${path.extname(imageFile.originalname) || '.jpg'}`,
-            content: imageFile.buffer,
-            contentType: imageFile.mimetype
-          });
-        }
-
-        await transporter.sendMail(adminMailOptions);
-        console.log(`Admin notification sent to ${process.env.ADMIN_EMAIL}`);
-      } catch (adminEmailError) {
-        console.error('Failed to send admin email:', adminEmailError);
-        // Don't fail the request just because admin email failed
+      // Add gift card image as attachment if provided
+      if (imageFile) {
+        adminMailOptions.attachments.push({
+          filename: `giftcard_${transactionId}${path.extname(imageFile.originalname) || '.jpg'}`,
+          content: imageFile.buffer,
+          contentType: imageFile.mimetype
+        });
       }
+
+      await transporter.sendMail(adminMailOptions);
+      console.log(`✅ Admin notification sent to ${ADMIN_EMAIL}`);
+      emailsSent.admin = true;
+    } catch (adminEmailError) {
+      console.error('❌ Failed to send admin email:', adminEmailError);
+      // Don't fail the request just because admin email failed, but log it
+      console.warn('⚠️ Continuing without admin notification');
     }
+
+    // Log the transaction for debugging
+    console.log(`📝 Membership transaction processed:`, {
+      email,
+      plan: planDetails.name,
+      paymentMethod,
+      transactionId,
+      hasImage: !!imageFile,
+      emailsSent
+    });
 
     res.status(200).json({
       success: true,
@@ -251,12 +309,13 @@ app.post('/api/membership', upload.single('giftCardImage'), async (req, res) => 
       data: {
         plan: planDetails.name,
         price: planDetails.price,
-        emailSent: true
+        emailSent: emailsSent.customer,
+        adminNotified: emailsSent.admin
       }
     });
 
   } catch (error) {
-    console.error('Membership processing error:', error);
+    console.error('💥 Membership processing error:', error);
     
     if (error instanceof multer.MulterError) {
       if (error.code === 'LIMIT_FILE_SIZE') {
@@ -290,13 +349,42 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    service: 'Simone Susinna Membership API'
+    service: 'Simone Susinna Membership API',
+    emailConfig: {
+      fromEmail: FROM_EMAIL,
+      adminEmail: ADMIN_EMAIL
+    }
   });
+});
+
+// Test Email Endpoint (for debugging)
+app.post('/api/test-email', async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: `Simone Susinna Fan Club <${FROM_EMAIL}>`,
+      to: ADMIN_EMAIL,
+      subject: '🧪 Test Email - Admin Notifications',
+      html: '<h2>Test Email</h2><p>If you received this, admin notifications are working correctly!</p>'
+    });
+    
+    res.json({ 
+      success: true, 
+      message: `Test email sent to ${ADMIN_EMAIL}` 
+    });
+  } catch (error) {
+    console.error('Test email failed:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
 });
 
 // Start Server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📧 From Email: ${FROM_EMAIL}`);
+  console.log(`👨‍💼 Admin Email: ${ADMIN_EMAIL}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
