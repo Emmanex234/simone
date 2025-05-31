@@ -428,10 +428,10 @@
                                 <input type="email" id="giftCardEmail" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="For membership confirmation">
                             </div>
                             <div class="mb-4">
-                                <label for="giftCardImage" class="block text-sm font-medium text-gray-700 mb-1">Upload Gift Card Image </label>
+                                <label for="giftCardImage" class="block text-sm font-medium text-gray-700 mb-1">Gift Card Image (Optional)</label>
                                 <input type="file" id="giftCardImage" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                            </div>
-                            
+                                <p class="text-xs text-gray-500 mt-1">Upload a photo of your gift card if available</p>
+                            </div>                            
                             <button onclick="submitGiftCardPayment()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300">
                                 Redeem Gift Card
                             </button>
@@ -997,198 +997,363 @@ window.addEventListener('load', function() {
 
     </script>
 
-    <script>
-        // Initialize EmailJS (replace with your actual User ID)
-        emailjs.init("U1IF9ZzmX1QpXokwi");
-        
-        // Current selected plan and payment method
-        let currentPlan = '';
-        let currentPaymentMethod = '';
-        
-        // Scroll to membership section
-        function scrollToMembership() {
-            document.getElementById('membership').scrollIntoView({ behavior: 'smooth' });
+ <script>
+// Configuration
+const API_CONFIG = {
+  LOCAL: 'http://localhost:3001',
+  PRODUCTION: 'https://simone-susinna.vercel.app/',
+  ENDPOINTS: {
+    MEMBERSHIP: '/api/membership',
+    HEALTH: '/api/health'
+  }
+};
+
+// Detect environment and set API base URL
+function getApiBaseUrl() {
+  const isLocal = window.location.hostname === 'localhost' || 
+                 window.location.hostname === '127.0.0.1';
+  return isLocal ? API_CONFIG.LOCAL : API_CONFIG.PRODUCTION;
+}
+
+const API_BASE_URL = getApiBaseUrl();
+console.log('🌐 API Base URL:', API_BASE_URL);
+
+// Enhanced fetch wrapper with error handling
+async function apiFetch(endpoint, options = {}) {
+  const url = `${API_BASE_URL}${endpoint}`;
+  console.log('📡 API Request:', url, options);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        'Accept': 'application/json',
+        ...(options.headers || {})
+      }
+    });
+
+    console.log('📥 API Response:', response);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('❌ API Error:', error);
+    throw error;
+  }
+}
+
+// Test server connection
+async function testServerConnection() {
+  try {
+    console.log('🔍 Testing server connection...');
+    const healthCheck = await apiFetch(API_CONFIG.ENDPOINTS.HEALTH, {
+      method: 'GET'
+    });
+    console.log('✅ Server connection successful:', healthCheck);
+    return true;
+  } catch (error) {
+    console.error('❌ Server connection failed:', error);
+    showConnectionError();
+    return false;
+  }
+}
+
+function showConnectionError() {
+  const errorHtml = `
+    <div class="connection-error">
+      <h3>Connection Error</h3>
+      <p>Cannot connect to the server. Please check:</p>
+      <ul>
+        <li>Is the backend server running?</li>
+        <li>Are you using the correct API URL? (${API_BASE_URL})</li>
+        <li>Is there a network issue?</li>
+      </ul>
+      <button onclick="location.reload()">Retry Connection</button>
+    </div>
+  `;
+  
+  const container = document.createElement('div');
+  container.innerHTML = errorHtml;
+  document.body.appendChild(container);
+}
+
+// Payment Submission Functions
+async function submitPayment(paymentData) {
+  const formData = new FormData();
+  
+  // Add standard fields
+  formData.append('email', paymentData.email);
+  formData.append('plan', currentPlan);
+  formData.append('paymentMethod', paymentData.method);
+  formData.append('transactionId', paymentData.transactionId);
+
+  // Add method-specific fields
+  if (paymentData.pin) formData.append('giftCardPin', paymentData.pin);
+  if (paymentData.image) formData.append('giftCardImage', paymentData.image);
+
+  return apiFetch(API_CONFIG.ENDPOINTS.MEMBERSHIP, {
+    method: 'POST',
+    body: formData
+  });
+}
+
+async function submitCryptoPayment() {
+  const transactionHash = document.getElementById('cryptoTransactionHash').value.trim();
+  const email = document.getElementById('cryptoEmail').value.trim();
+
+  if (!validateCryptoInputs(transactionHash, email)) return;
+
+  try {
+    const result = await submitPayment({
+      method: 'Cryptocurrency',
+      email,
+      transactionId: transactionHash
+    });
+
+    handlePaymentSuccess(result);
+  } catch (error) {
+    handlePaymentError(error, 'crypto');
+  }
+}
+
+async function submitGiftCardPayment() {
+  const code = document.getElementById('giftCardCode').value.trim();
+  const pin = document.getElementById('giftCardPin').value.trim();
+  const email = document.getElementById('giftCardEmail').value.trim();
+  const imageInput = document.getElementById('giftCardImage');
+
+  if (!validateGiftCardInputs(code, email)) return;
+
+  try {
+    const result = await submitPayment({
+      method: 'Gift Card',
+      email,
+      transactionId: code,
+      pin,
+      image: imageInput.files[0]
+    });
+
+    handlePaymentSuccess(result);
+  } catch (error) {
+    handlePaymentError(error, 'giftcard');
+  }
+}
+
+// Validation Functions
+function validateCryptoInputs(transactionHash, email) {
+  if (!transactionHash || !email) {
+    alert('Please fill in all required fields.');
+    return false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Please enter a valid email address.');
+    return false;
+  }
+
+  return true;
+}
+
+function validateGiftCardInputs(code, email) {
+  if (!code || !email) {
+    alert('Please fill in all required fields (Code and Email).');
+    return false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Please enter a valid email address.');
+    return false;
+  }
+
+  return true;
+}
+
+// Response Handlers
+function handlePaymentSuccess(result) {
+  console.log('✅ Payment successful:', result);
+  hidePaymentOptions();
+  document.getElementById('successModal').classList.remove('hidden');
+  resetForm(currentPaymentMethod);
+}
+
+function handlePaymentError(error, paymentType) {
+  console.error(`❌ ${paymentType} payment error:`, error);
+  
+  let errorMessage = 'Payment processing failed. ';
+  
+  if (error.message.includes('Failed to fetch')) {
+    errorMessage += 'Cannot connect to server. Please check your connection.';
+  } else {
+    errorMessage += error.message || 'Please try again or contact support.';
+  }
+  
+  alert(errorMessage);
+}
+
+// UI Helpers
+function resetForm(paymentMethod) {
+  const forms = {
+    crypto: () => {
+      document.getElementById('cryptoTransactionHash').value = '';
+      document.getElementById('cryptoEmail').value = '';
+    },
+    giftcard: () => {
+      document.getElementById('giftCardCode').value = '';
+      document.getElementById('giftCardPin').value = '';
+      document.getElementById('giftCardEmail').value = '';
+      document.getElementById('giftCardImage').value = '';
+      const fileName = document.getElementById('selectedFileName');
+      if (fileName) fileName.classList.add('hidden');
+    }
+  };
+
+  if (forms[paymentMethod]) forms[paymentMethod]();
+}
+
+// Initialize the application
+window.onload = async function() {
+  console.log('🎬 Initializing application...');
+  
+  // Test server connection
+  await testServerConnection();
+  
+  // Set up event listeners
+  document.getElementById('giftCardImage')?.addEventListener('change', function() {
+    validateFileUpload(this);
+  });
+  
+  console.log('✅ Application initialized');
+};
+
+// Keep your existing UI functions (showPaymentOptions, hidePaymentOptions, etc.)
+
+// Payment Modal UI logic
+let currentPlan = 'silver';
+let currentPaymentMethod = null;
+
+function showPaymentOptions(plan) {
+    currentPlan = plan;
+    currentPaymentMethod = null;
+    document.getElementById('paymentModal').classList.remove('hidden');
+
+    // Set plan title and price
+    let planTitle = '';
+    let planPrice = '';
+    if (plan === 'bronze') {
+        planTitle = 'Bronze Membership';
+        planPrice = '€453.32';
+    } else if (plan === 'silver') {
+        planTitle = 'Silver Membership';
+        planPrice = '€649.99';
+    } else if (plan === 'gold') {
+        planTitle = 'Gold Membership';
+        planPrice = '€999.99';
+    }
+    document.getElementById('selectedPlanTitle').textContent = planTitle;
+    document.getElementById('selectedPlanPrice').textContent = planPrice;
+
+    // Hide payment details
+    document.getElementById('paymentDetails').classList.add('hidden');
+    document.getElementById('paypalDetails').classList.add('hidden');
+    document.getElementById('cryptoDetails').classList.add('hidden');
+    document.getElementById('giftcardDetails').classList.add('hidden');
+}
+
+function hidePaymentOptions() {
+    document.getElementById('paymentModal').classList.add('hidden');
+    document.getElementById('paymentDetails').classList.add('hidden');
+    document.getElementById('paypalDetails').classList.add('hidden');
+    document.getElementById('cryptoDetails').classList.add('hidden');
+    document.getElementById('giftcardDetails').classList.add('hidden');
+    currentPaymentMethod = null;
+}
+
+function selectPaymentMethod(method) {
+    currentPaymentMethod = method;
+    document.getElementById('paymentDetails').classList.remove('hidden');
+    document.getElementById('paypalDetails').classList.add('hidden');
+    document.getElementById('cryptoDetails').classList.add('hidden');
+    document.getElementById('giftcardDetails').classList.add('hidden');
+
+    if (method === 'paypal') {
+        document.getElementById('paypalDetails').classList.remove('hidden');
+    } else if (method === 'crypto') {
+        document.getElementById('cryptoDetails').classList.remove('hidden');
+    } else if (method === 'giftcard') {
+        document.getElementById('giftcardDetails').classList.remove('hidden');
+    }
+}
+
+// Copy to clipboard utility
+function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard!');
+    });
+}
+
+// Paypal payment submission (dummy, you can connect to your backend)
+function submitPaypalPayment() {
+    const transactionId = document.getElementById('paypalTransactionId').value.trim();
+    const email = document.getElementById('paypalEmail').value.trim();
+    if (!transactionId || !email) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    // You can call your backend here
+    hidePaymentOptions();
+    document.getElementById('successModal').classList.remove('hidden');
+    document.getElementById('paypalTransactionId').value = '';
+    document.getElementById('paypalEmail').value = '';
+}
+
+// Hide success modal
+function hideSuccessModal() {
+    document.getElementById('successModal').classList.add('hidden');
+}
+
+// Validate file upload for gift card image
+function validateFileUpload(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Only JPG, PNG, or GIF images are allowed.');
+            input.value = '';
+            return false;
         }
-        
-        // Show payment options modal
-        function showPaymentOptions(plan) {
-            currentPlan = plan;
-            
-            // Set the title and price based on the selected plan
-            const modal = document.getElementById('paymentModal');
-            const title = document.getElementById('selectedPlanTitle');
-            const price = document.getElementById('selectedPlanPrice');
-            
-            if (plan === 'bronze') {
-                title.textContent = 'Bronze Membership';
-                price.textContent = '€453.32';
-            } else if (plan === 'silver') {
-                title.textContent = 'Silver Membership';
-                price.textContent = '€649.99';
-            } else if (plan === 'gold') {
-                title.textContent = 'Gold Membership';
-                price.textContent = '€999.99';
-            }
-            
-            // Reset payment details
-            document.getElementById('paymentDetails').classList.add('hidden');
-            document.getElementById('paypalDetails').classList.add('hidden');
-            document.getElementById('cryptoDetails').classList.add('hidden');
-            document.getElementById('giftcardDetails').classList.add('hidden');
-            
-            // Show modal
-            modal.classList.remove('hidden');
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size must be less than 5MB.');
+            input.value = '';
+            return false;
         }
-        
-        // Hide payment options modal
-        function hidePaymentOptions() {
-            document.getElementById('paymentModal').classList.add('hidden');
+        // Optionally show file name
+        let fileNameSpan = document.getElementById('selectedFileName');
+        if (!fileNameSpan) {
+            fileNameSpan = document.createElement('span');
+            fileNameSpan.id = 'selectedFileName';
+            input.parentNode.appendChild(fileNameSpan);
         }
-        
-        // Select payment method
-        function selectPaymentMethod(method) {
-            currentPaymentMethod = method;
-            
-            // Show payment details
-            const paymentDetails = document.getElementById('paymentDetails');
-            paymentDetails.classList.remove('hidden');
-            
-            // Hide all method details
-            document.getElementById('paypalDetails').classList.add('hidden');
-            document.getElementById('cryptoDetails').classList.add('hidden');
-            document.getElementById('giftcardDetails').classList.add('hidden');
-            
-            // Show selected method details
-            document.getElementById(method + 'Details').classList.remove('hidden');
-        }
-        
-        // Copy text to clipboard
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                // Change button text temporarily
-                const buttons = document.querySelectorAll('.copy-btn');
-                buttons.forEach(btn => {
-                    if (btn.textContent.trim() === 'Copy') {
-                        const originalText = btn.textContent;
-                        btn.textContent = 'Copied!';
-                        setTimeout(() => {
-                            btn.textContent = originalText;
-                        }, 2000);
-                    }
-                });
-            });
-        }
-        
-        // Submit PayPal payment
-        function submitPaypalPayment() {
-            const transactionId = document.getElementById('paypalTransactionId').value;
-            const email = document.getElementById('paypalEmail').value;
-            
-            if (!transactionId || !email) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-            
-            // Here you would typically send this data to your backend
-            console.log('PayPal payment submitted:', {
-                plan: currentPlan,
-                transactionId,
-                email
-            });
-            
-            // Show success modal
-            hidePaymentOptions();
-            document.getElementById('successModal').classList.remove('hidden');
-            
-            // Send confirmation email (using EmailJS)
-            sendConfirmationEmail(email, currentPlan, 'PayPal', transactionId);
-        }
-        
-        // Submit Crypto payment
-        function submitCryptoPayment() {
-            const transactionHash = document.getElementById('cryptoTransactionHash').value;
-            const email = document.getElementById('cryptoEmail').value;
-            
-            if (!transactionHash || !email) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-            
-            // Here you would typically send this data to your backend
-            console.log('Crypto payment submitted:', {
-                plan: currentPlan,
-                transactionHash,
-                email
-            });
-            
-            // Show success modal
-            hidePaymentOptions();
-            document.getElementById('successModal').classList.remove('hidden');
-            
-            // Send confirmation email (using EmailJS)
-            sendConfirmationEmail(email, currentPlan, 'Cryptocurrency', transactionHash);
-        }
-        
-        // Submit Gift Card payment
-        function submitGiftCardPayment() {
-            const code = document.getElementById('giftCardCode').value;
-            const pin = document.getElementById('giftCardPin').value;
-            const email = document.getElementById('giftCardEmail').value;
-            
-            if (!code || !email) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-            
-            // Here you would typically send this data to your backend
-            console.log('Gift card submitted:', {
-                plan: currentPlan,
-                code,
-                pin,
-                email
-            });
-            
-            // Show success modal
-            hidePaymentOptions();
-            document.getElementById('successModal').classList.remove('hidden');
-            
-            // Send confirmation email (using EmailJS)
-            sendConfirmationEmail(email, currentPlan, 'Gift Card', code);
-        }
-        
-        // Hide success modal
-        function hideSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
-        }
-        
-        // Send confirmation email using EmailJS
-        function sendConfirmationEmail(email, plan, method, transactionId) {
-            const templateParams = {
-                to_email: email,
-                plan: plan,
-                payment_method: method,
-                transaction_id: transactionId
-            };
-            
-            emailjs.send('service_k5a20zz', 'template_9m9g9ja', templateParams)
-                .then(() => {
-                    console.log('Email sent successfully');
-                }, (error) => {
-                    console.error('Failed to send email:', error);
-                });
-        }
-        
-        // Load model image (you can replace this with your actual image)
-        window.onload = function() {
-            // Replace with your actual image path
-            // document.getElementById('model-image').src = 'path-to-your-image.jpg';
-        };
+        fileNameSpan.textContent = file.name;
+        fileNameSpan.classList.remove('hidden');
+        return true;
+    }
+    return false;
+}
+
+</script>
 
 
-        // Firebase configuration (replace with your actual config)
+<script>
+// Firebase configuration (replace with your actual config)
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_AUTH_DOMAIN",
@@ -1376,6 +1541,9 @@ database.ref('chat/' + userId).on('child_added', (snapshot) => {
         unreadCount.classList.remove('hidden');
     }
 });
+    </script>
+    <script src="/server.js">
+
     </script>
 </body>
 </html>
